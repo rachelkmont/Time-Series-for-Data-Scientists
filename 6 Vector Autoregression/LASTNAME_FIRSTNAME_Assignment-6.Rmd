@@ -1,0 +1,249 @@
+---
+title: "Assignment 6"
+author: "Rachel Montgomery"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = TRUE, warning = FALSE, message = FALSE, comment = NA, cache = TRUE)
+# Load packages
+library(vars)
+library(urca)
+library(fpp2)
+library(fpp3)
+library(ggplot2)
+
+# Set seed for reproducibility
+set.seed(1234)
+```
+
+## Forecast `median_days` using `VAR` and `VECM` models
+
+### 1. Loading `nashville_housing` and `housing_validation` and format them into `tsibble`
+#### Set up a pandemic dummy variable between May 2020 and June 2021 in `nashville_housing` (add a pandemic dummy variable to your validation data too!)
+
+```{r}
+#load in nashville housing 
+nashville_housing <- read.csv("nashville_housing.csv")
+
+# convert date 
+nashville_housing$date <- yearmonth(nashville_housing$date)
+
+# convert to `tsibble`
+housing_ts <- nashville_housing %>%
+  as_tsibble(index = date)
+
+# Outlier dummy variable
+housing_ts$outlier <- rep(0, nrow(housing_ts))
+
+# Set outlier to 1
+housing_ts$outlier[
+  which.min(difference(housing_ts$housing))
+] <- 1
+
+# Set pandemic dummy variable 
+housing_ts$pandemic <- rep(0, nrow(housing_ts))
+housing_ts$pandemic[
+  which(
+    as.character(housing_ts$date) == "2020 May"
+  ):which(
+    as.character(housing_ts$date) == "2021 Jun"
+  )
+] <- 1
+```
+
+```{r, eval = TRUE, echo = FALSE, warning = FALSE, comment = NA, cache = TRUE, fig.width = 6}
+# load in housing validation
+housing_validation <- read.csv("housing_validation.csv")
+
+# convert date
+housing_validation$date <- yearmonth(housing_validation$date)
+
+# convert to `tsibble`
+housing_valid <- housing_validation %>%
+  as_tsibble(index = date)
+
+# Set pandemic dummy variable 
+housing_valid$pandemic <- rep(0, nrow(housing_valid))
+housing_valid$pandemic[
+  which(
+    as.character(housing_valid$date) == "2020 May"
+  ):which(
+    as.character(housing_valid$date) == "2021 Jun"
+  )
+] <- 1
+
+```
+
+### 2. Fit an \{fpp3\} `VAR` model to the `nashville_housing` data
+
+```{r, eval = TRUE, echo = TRUE, warning = FALSE, comment = NA}
+# Fit VAR model
+
+fit_var <- housing_ts %>%
+  model(
+    lag_2 = VAR(
+      vars(housing, unemployment, median_days,
+           price_decreased, pending_listing) ~
+        xreg(outlier, pandemic)
+    )
+  )
+
+## Make sure to include exogenous variables `outlier` and `pandemic`
+```
+
+### 3. Report fit of `VAR`model. How many lags were used?
+
+```{r, eval = TRUE, echo = TRUE, warning = FALSE, comment = NA}
+# Report fit
+report(fit_var)
+```
+
+
+> Answer: "How many lags were used?"
+
+### 4. Plot the autocorrelations of the residuals
+
+```{r, eval = TRUE, echo = TRUE, warning = FALSE, comment = NA, cache = TRUE, fig.width = 6}
+# Autocorrelation of residuals
+fit_var %>%
+  augment() %>%
+ACF(.innov) %>%
+  autoplot()
+```
+
+### 5. Were any autocorrelations significant in 4.? Report which variables and at what lags. Be sure to report *all* variables *and* lags
+
+> Report significant autocorrelations. Report all variables and lags that are significant.
+
+### 6. Fit a `VAR` model to the `nashville_housing` data using \{vars\}
+
+```{r, eval = TRUE, echo = TRUE, warning = FALSE, comment = NA, cache = TRUE, fig.width = 6}
+# VAR model with {vars}
+
+vars_var <- vars::VAR(
+  y = housing_ts[,c(
+    "housing", "unemployment", "median_days",
+    "price_decreased", "pending_listing"
+  )],
+  exogen = housing_ts[,c("outlier", "pandemic")],
+  type = "none", # same as {fpp3}'s `VAR`
+  p = 2 # lag
+)
+
+# Make dummy variable matrix
+dummat <- matrix(
+  rep(0, 2 * 24), nrow = 24,
+  dimnames = list(NULL, c("outlier", "pandemic")))
+
+```
+
+### 7. Perform the serial test on the residual autocorrelations. Interpret the *p*-value. What does this mean?
+
+```{r, eval = TRUE, echo = TRUE, warning = FALSE, comment = NA}
+# Perform serial test
+
+
+## Set 'lags.pt' to `4`
+## Set 'type' to "PT.adjusted"
+```
+
+> Answer: "Interpret the *p*-value. What does this mean?"
+
+### 8. Forecast 13 time points ahead using the `VAR` model
+#### Don't forget to create a dummy variable matrix for the "pandemic" variable
+
+```{r, eval = TRUE, echo = TRUE, warning = FALSE, comment = NA, cache = TRUE, fig.width = 6}
+
+# Forecast
+var_fc <- predict(vars_var, n.ahead = 24, dumvar = dummat)
+
+# Get forecast values
+fc_housing <- var_fc$fcst$housing
+
+# Set up forecast as {fpp3} does
+var_fc <- data.frame(
+  .model = "VAR",
+  date = fc_var$date,
+  housing = distributional::dist_normal(
+    mean = fc_housing[,"fcst"],
+    sd = fc_housing[,"CI"]
+  ),
+  .mean = fc_housing[,"fcst"],
+  fc[fc$.model == "tslm_sig", -c(1:4)]
+) %>% as_tsibble(index = date)
+
+# Add "housing" to dimnames
+dimnames(var_fc$housing) <- "housing"
+
+# Add to original forecast
+fc <- bind_rows(fc, var_fc)
+
+```
+
+### 9. Format the `median_days` forecast to {fpp3} specifications
+#### Use `housing_validation`'s `date` variable
+
+```{r, eval = TRUE, echo = FALSE, warning = FALSE, comment = NA, cache = TRUE, fig.width = 6}
+
+```
+
+### 10. Plot the forecast against the validation data
+
+```{r, eval = TRUE, echo = FALSE, warning = FALSE, comment = NA, cache = TRUE, fig.width = 6}
+
+```
+
+### 11. Does the `VAR` forecast seem accurate?
+
+> Answer: "Does the `VAR` forecast seem accurate?"
+
+### 12. Perform co-integration
+
+```{r, eval = TRUE, echo = FALSE, warning = FALSE, comment = NA}
+
+```
+
+### 13. Print summary. What rank do you have evidence for? What is the test statistic? What critical value do you show evidence for at this rank?
+
+```{r, eval = TRUE, echo = FALSE, warning = FALSE, comment = NA}
+
+```
+
+> Answer: "What rank do you have evidence for?"
+
+> Answer: "What is the test statistic (i.e., numerical value) of the rank you reported above?"
+
+> Answer: "What critical value do you show evidence for at this rank?"
+
+### 14. Convert `VECM` to `VAR` and forecast 13 months out (use code from 8.)
+
+```{r, eval = TRUE, echo = FALSE, warning = FALSE, comment = NA}
+
+```
+
+### 15. Format the `median_days` forecast to {fpp3} specifications
+#### Use `housing_validation`'s `date` variable
+#### Use code from 9.
+
+```{r, eval = TRUE, echo = FALSE, warning = FALSE, comment = NA, cache = TRUE, fig.width = 6}
+
+```
+
+### 16. Plot the forecast against the validation data and `VAR` forecast
+
+```{r, eval = TRUE, echo = FALSE, warning = FALSE, comment = NA, cache = TRUE, fig.width = 6}
+
+```
+
+### 17. Based on the plotted forecasts, which forecast would you prefer? What does the VECM do differently than the VAR? Would you trust this model to forecast into the future?
+
+> Answer: "Based on the plotted forecasts, which forecast would you prefer? What does the VECM do differently than the VAR? Would you trust this model to forecast into the future?"
+
+
+
+
+
+
+
+
