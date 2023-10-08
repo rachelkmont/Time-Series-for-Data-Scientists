@@ -35,7 +35,7 @@ gas %>%
 autoplot(Gas)
 ```
 
-![](Decomp_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+![](Decomposition_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
 
 From the plot, we can observe an upward trend with quarterly
 seasonality.
@@ -57,7 +57,7 @@ components() %>%
   autoplot()
 ```
 
-![](Decomp_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+![](Decomposition_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
 
 #### Interpretation of Decomposition
 
@@ -80,7 +80,7 @@ as_tsibble() %>%
 autoplot(season_adjust)
 ```
 
-![](Decomp_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+![](Decomposition_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
 #### Effect of Adding an Outlier
 
@@ -100,7 +100,7 @@ as_tsibble() %>%
 autoplot(season_adjust)
 ```
 
-![](Decomp_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+![](Decomposition_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
 *What is the effect of the outlier, relative to the original seasonally
 adjusted plot?*
@@ -138,7 +138,7 @@ gas_outlier %>%
   theme_minimal()
 ```
 
-![](Decomp_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+![](Decomposition_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
 ``` r
 # Add an outlier at the end 
@@ -160,7 +160,7 @@ gas_outlier %>%
   theme_minimal()
 ```
 
-![](Decomp_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+![](Decomposition_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
 ``` r
 # Add an outlier in the first 1/3 of the data 
@@ -182,7 +182,7 @@ gas_outlier %>%
   theme_minimal()
 ```
 
-![](Decomp_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+![](Decomposition_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
 ``` r
 # Add an outlier in the last 3/4 of data
@@ -204,7 +204,7 @@ gas_outlier %>%
   theme_minimal()
 ```
 
-![](Decomp_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+![](Decomposition_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
 
 *General patterns we see*
 
@@ -321,7 +321,7 @@ prediction %>%
   theme_minimal()
 ```
 
-![](Decomp_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+![](Decomposition_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
 Next, we’ll compute correlations among the variables.
 
@@ -336,7 +336,7 @@ prediction %>%
     ##   method from   
     ##   +.gg   ggplot2
 
-![](Decomp_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+![](Decomposition_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
 
 #### Model Estimation
 
@@ -502,7 +502,7 @@ data %>%
     ## Warning in max(ids, na.rm = TRUE): no non-missing arguments to max; returning
     ## -Inf
 
-![](Decomp_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
+![](Decomposition_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
 
 ``` r
 # Plot the forecasts simultaneously
@@ -520,7 +520,7 @@ data %>%
   )
 ```
 
-![](Decomp_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
+![](Decomposition_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
 
 ##### Forecasting: Evaluating the Forecasts
 
