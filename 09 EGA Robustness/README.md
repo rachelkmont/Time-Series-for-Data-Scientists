@@ -5,6 +5,8 @@
 This project conducts a comprehensive analysis of the Big Five Inventory-2 (BFI-2) survey data, focusing on the structural invariance and redundancy across different times and age groups.
 The analysis aims to understand how survey responses vary over time and between younger and middle-aged groups, providing insights into the consistency and reliability of the BFI-2 survey.
 
+In this assignment, we delve into the robustness of the Big Five Inventory-2 (BFI-2) dataset using Exploratory Graph Analysis (EGA). We aim to investigate measurement invariance across different times and age groups, and identify any redundancies in the survey data.
+
 **Sections:**
 
 -   Data Preparation and Grouping
