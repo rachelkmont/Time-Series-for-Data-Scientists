@@ -43,7 +43,6 @@ comprehensively address the research question.
 
 -   Final Assessment of Artist Morality's Impact
 
-Feel free to explore the file and it's sections to understand the
-analysis and findings.
+For rendered plots and full visualizations, please refer to the .md file.
 
 Happy learning and analyzing!

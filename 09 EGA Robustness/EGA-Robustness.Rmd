@@ -176,7 +176,11 @@ ma_invariance <- invariance(
 )
 ```
 
+### Measurement Invariance Analysis
 
+#### Analysis of Time Points for Younger Age Group
+
+We visualized and summarized the results of the invariance test for the younger age group, highlighting significant items that showed measurement variation across time points.
 ```{r, echo = TRUE, eval = TRUE, comment = NA, warning = FALSE, message = FALSE}
 # plotting the invariance results to visually assess the stability of measurements
 # node size and label size are adjusted for clear visualization
@@ -201,7 +205,7 @@ ma_items
 
 The analysis indicates partial measurement invariance between the two time points for the younger age group. The items 'Is full of energy,' 'Prefers to have others take charge,' 'Shows a lot of enthusiasm' show significant differences with lower scores in Survey 1 compared to Survey 2 (p-values: 0.008, 0.050, and 0.044, respectively) which suggests that extraversion is better described in Survey 2. The items 'Tends to be lazy' and 'Worries a lot' have higher scores in Survey 1, which suggests a decrease in traits related to nonscientiousness and negative emotionality over time.
 
-#### Conclusions
+#### 8. Based on the measurement invariance reported for the younger (5.) and middle-aged (7.) age groups, what can you say about the measurement of the BFI-2 between the two time points?
 
 The demographics of the participation in surveys 1 and 2 are not the same, as indicated by p-values less than 0.05. These differences suggest variations in how certain traits are perceived or rated by participants at different times, pointing to potential changes in demographics, attitudes, or perceptions between Survey 1 and Survey 2.
 

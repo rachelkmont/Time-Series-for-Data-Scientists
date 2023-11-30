@@ -10,6 +10,6 @@ This folders contains a Time Series Linear Model Analysis assignment. The assign
 
 3. **Analyzing Souvenirs Sales Data:** The final section explores sales data for a souvenir shop in Queensland, Australia. It analyzes data patterns, applies logarithmic transformations, fits regression models, and assesses the impact of the surfing festival on sales.
 
-Feel free to explore the file and it's sections to understand the analysis and findings.
+For rendered plots and full visualizations, please refer to the .md file.
 
 Happy learning and analyzing!

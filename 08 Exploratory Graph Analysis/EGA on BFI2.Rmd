@@ -96,12 +96,11 @@ The study titled "LOOPRP" explored the replicability of the connections between 
 
 It's worth noting that due to some age overlaps, the two groups have shared participants.
 
-## Assignment
+## Analysis
 
-### Structure of BFI-2 at Time 1
+### Dissecting BFI-2 at Time 1
 
-#### 1. Subset the data into time 1 only (i.e., extract `Survey1` data only)
-
+First, we subset the BFI-2 data to focus solely on responses from the first survey (Time 1).
 ```{r}
 # Subset the data to only include rows where CaseID contains "Survey1"
 survey1_data <- bfi2 %>% 
@@ -117,7 +116,6 @@ survey1_data_ages <- bfi2 %>%
 ```
 
 Lets estimate the associations with a correlation matrix.
-
 ```{r}
 ##create a correlation matrix
 survey1_corr <- auto.correlate(survey1_data)
@@ -126,10 +124,9 @@ survey1_corr <- auto.correlate(survey1_data)
 
 ### Comparing Walktrap and Louvain Algorithms
 
-#### 2. Apply `EGA` to the survey time 1 BFI-2 items *only*
+#### Applying EGA to Time 1 Data
 
 In R, the EGA package provides the necessary tools to perform exploratory graph analysis. The output from an EGA can then be visualized as a network plot, highlighting the relationships between variables and the detected dimensions.
-
 ```{r}
 survey1_ega<- EGA(survey1_data , node.size=6, label.size=2, plot.EGA = TRUE)
 
@@ -138,7 +135,7 @@ survey1_ega<- EGA(survey1_data , node.size=6, label.size=2, plot.EGA = TRUE)
 
 The graphical output displays nodes (variables) connected by edges (relationships). Nodes are grouped and colored based on their detected communities, indicating variables that share strong relationships or exhibit similar patterns. The thickness and color of the edges can indicate the strength and direction of relationships.
 
-#### 3. How many communities were there? What was the `lambda` used? What about number of edges and edge density? What was the TEFI?
+#### Insights from EGA
 
 -   Number of Communities: There were 5 communities detected.
 
@@ -164,8 +161,9 @@ The graphical output displays nodes (variables) connected by edges (relationship
 
     -   TEFI is an index to measure the goodness-of-fit of the graphical model. In this context, the negative value suggests there might be some degree of misfit, but the degree of concern would depend on comparisons with other models or established benchmarks.
 
-#### 4. Apply the Louvain algorithm to the same survey time 1 data as 2.
+#### Testing with the Louvain Algorithm
 
+To validate our findings, we apply the Louvain algorithm to the same dataset and compare the outcomes.
 ```{r, echo = TRUE, eval = TRUE, comment = NA, warning = FALSE, message = FALSE}
 survey1_louvain<- EGA(survey1_data, algorithm = "louvain", node.size=6, label.size=2, plot.EGA = TRUE)
 
@@ -197,13 +195,7 @@ survey1_louvain<- EGA(survey1_data, algorithm = "louvain", node.size=6, label.si
 
     -   The TEFI score is a measure of the fit of the estimated network model to the data, with higher values (closer to 0) indicating a better fit. A TEFI of -74.933 suggests that there may be some discrepancies between the observed data and the model's representation of that data.
 
-#### 5. How many communities were there? What was the TEFI?
-
-There were 5 communities identified by the Louvain algorithm. They seem to be the same ones as found with EGA.
-
-The TEFI value was -74.933. In this context, the negative value suggests there might be some degree of misfit, but the degree of concern would depend on comparisons with other models or established benchmarks.
-
-#### 6. What algorithm appears to fit the data better?
+#### Comparative Analysis of Algorithms
 
 The Exploratory Graph Analysis (EGA) and the Louvain algorithm both identified five communities within the survey data, that are similar.
 
@@ -221,24 +213,23 @@ I think that the Louvain fits the data better, as it aligns more closely with th
 
 ### Comparing EGA-identified structure fit to theoretical structure
 
-#### 7. Using the theoretical Big Five structure, what is the TEFI? (hint: the theoretical dimensions are in the codebook data)
+#### Theoretical Big Five structure TEFI
 
 The TEFI score is used to compare the fit of different network structures or to assess how well a given network structure represents the underlying factorial structure of the data. The model with the highest TEFI score (i.e., the least negative) is considered to have the best fit among the models being compared.
 
 ```{r}
 compare_tefi <- data.frame(
   Algorithm = c("EGA", "Louvain"),
-  TEFI = c(survey1_ega$TEFI, survey1_louvain$TEFI) # Assuming ega_res also has a $TEFI
+  TEFI = c(survey1_ega$TEFI, survey1_louvain$TEFI) 
 )
 print(compare_tefi)
-
 ```
 
-#### 8. Does the theoretical or EGA structure suggest better fit?
+#### Comparing theoretical to EGA structure 
 
 The TEFI score for the Louvain algorithm is less negative than the TEFI score for the EGA, which suggests that the structure identified by the Louvain algorithm has a better fit to the data than the one identified by the EGA.
 
-#### 9. Use `EGA.fit()` for both Walktrap and Louvain algorithms. Does either algorithm improve in fit beyond the theoretical structure? If so, what algorithm, what's the TEFI, and how many communities does it suggest?
+#### Visual Comparison
 
 ```{r, echo = TRUE, eval = TRUE, comment = NA, warning = FALSE, message = FALSE}
 fit_walktrap <- EGA.fit(survey1_data, algorithm = "walktrap", node.size=6, label.size=2, plot.EGA = TRUE)
@@ -253,9 +244,11 @@ The less negative TEFI score indicates a better fit; the Walktrap algorithm (TEF
 
 Considering the theoretical structure to be represented by these algorithms, the Walktrap algorithm shows an improvement in fit over the Louvain algorithm. It has a better (less negative) TEFI score and a network structure with fewer communities, which might be more interpretable or aligned with the underlying theoretical constructs of the Big Five personality traits.
 
-### Age Group Splits
+### Age Group Analysis
 
-#### 10. Split the survey time 1 data into "younger" and "middle-aged" groups based on 18-25 and 26-50, respectively.
+#### Splitting Data by Age
+
+We divide the Time 1 data into "younger" and "middle-aged" groups to explore if and how personality trait structures differ with age.
 
 ```{r}
 survey1_data <- bfi2 %>% 
@@ -280,16 +273,18 @@ middle_aged <- middle_aged %>%
   select(4:63) 
 ```
 
-#### 11. Find the best fit for EGA with the Louvain algorithm for the younger and middle-aged group
+#### EGA for Different Age Groups
 
+Employing the Louvain algorithm, we perform EGA for both age groups separately, uncovering any differences in trait interrelations.
 ```{r, echo = TRUE, eval = TRUE, comment = NA, warning = FALSE, message = FALSE}
 ega_younger <- EGA(younger, algorithm = "louvain",  node.size=6, label.size=2, plot.EGA = TRUE)
 ega_middle_aged <- EGA(middle_aged, algorithm = "louvain",  node.size=6, label.size=2, plot.EGA = TRUE)
 
 ```
 
-#### 12. To visually compare the similarities and differences between the two solutions, you can drop your EGA objects into the `compare.EGA.plots()` function
+#### Visual Comparison
 
+Using the compare.EGA.plots() function, we visually contrast the findings between the younger and middle-aged groups, highlighting both similarities and differences.
 ```{r, echo = TRUE, eval = TRUE, comment = NA, warning = FALSE, message = FALSE}
 compare.EGA.plots(ega_younger, ega_middle_aged, node.size = 4, label.size = 0)
 

@@ -17,7 +17,7 @@ library(ggplot2)
 set.seed(1234)
 ```
 
-## Assignment 6: Unraveling Multivariate Time Series with Vector Autoregression
+## Unraveling Multivariate Time Series with Vector Autoregression
 
 Time series forecasting is a crucial part of many sectors, from predicting stock prices to anticipating energy demand. In this assignment, we'll explore the power of vector autoregression (VAR) models and learn how to forecast time series data effectively using R.
 
@@ -120,11 +120,6 @@ To determine if any autocorrelations are significant, we typically look for bars
 -   price_decreased: Significant autocorrelation observed around lag 6 and 12.
 
 -   pending_listing: Significant autocorrelation around lag 12.
-
-#### Significant Autocorrelations
-
-Identifying significant autocorrelations in the residuals.
-
 
 
 ### Section 3: Building a VAR Model with {vars}
@@ -366,4 +361,3 @@ Based on the plotted forecasts, I prefer the VECM model.
 
 -   The VECM also appears to be less volatile than the VAR model.
 
-### Conclusion
