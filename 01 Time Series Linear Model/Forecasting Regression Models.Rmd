@@ -1,7 +1,5 @@
 ---
 title: "Time Series Linear Model Applied"
-author: "Rachel Montgomery"
-date: "2023-08-28"
 output: github_document
 editor_options: 
   markdown: 
@@ -13,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, cache = TRUE)
 library(fpp3)
 ```
 
-## Assignment 1: Exploring Time Series Data with R
+## Exploring Time Series Data with R
 
 Welcome to the first assignment of our Time Series Analysis class. In
 this assignment, we'll be working with real-world time series data to
@@ -59,9 +57,11 @@ jan_vic_elec %>%
     ylab("Electricity Demand") +
     xlab("Temperature") +
     geom_point() +
-    geom_smooth(method="lm", se=FALSE) + #this gives us a line of best fit
+    geom_smooth(method="lm", se=FALSE) +
+  #this gives us a line of best fit
 #the estimated regression line makes the positive relationship more evident
-  theme_minimal()
+  theme_minimal() +
+  labs(title = "Relationship Between Electricity Demand and Temperature", x= "Temperature (°C)")
 ```
 
 *Why is there a positive relationship?*
@@ -80,7 +80,8 @@ affect the validity of our model.
 
 ```{r, message = FALSE, warning = FALSE, comment = NA, echo = TRUE, eval = TRUE}
 # Plot residuals
-gg_tsresiduals(fit)
+gg_tsresiduals(fit)+
+   labs(title = "Residual Plot for Model Adequacy") 
 ```
 
 *Is the model adequate?*
@@ -110,7 +111,10 @@ forecast_future<- fit %>%
 
 # Plot
 autoplot(jan_vic_elec, Demand) +
-  autolayer(forecast_future)
+  autolayer(forecast_future) +
+  theme_minimal() +
+  labs(title = "Electricity Demand Forecast for Different Temperature Scenarios", x= "Date", y="Demand")
+
 ```
 
 *Do you believe these forecasts?*
@@ -145,7 +149,8 @@ vic_elec %>% # full dataset
   ) %>%
   ggplot(aes(x = Temperature, y = Demand)) +
   geom_point() +
-  theme_minimal()
+  theme_minimal()  +
+  labs(title = "Electricity Demand vs. Temperature for All Available Data", x= "Temperature (°C)")
 ```
 
 *What does this say about our model?*
@@ -172,7 +177,8 @@ olympic_running %>%
   scale_color_brewer(palette = "Dark2") +
   theme(legend.position = "bottom", legend.title = element_blank()) +
   labs(y = "Running time (seconds)") +
-  theme_minimal()
+  theme_minimal()+
+  labs(title = "Winning Times Over the Years")
 
 ```
 
@@ -201,7 +207,8 @@ olympic_running %>%
     geom_point() +
   ## adding a line of best fit
     geom_smooth(method="lm", se=FALSE) + 
-    theme_minimal()
+    theme_minimal() +
+    labs(title = "Average Rate of Change in Winning Times Over the Years", x= "Temperature (°C)")
 ```
 
 ```{r, message = FALSE, warning = FALSE, comment = NA, echo = FALSE, eval = TRUE, results = "asis"}
@@ -226,7 +233,8 @@ augment(fit2) %>%
   theme_minimal() +
   scale_color_brewer(palette = "Dark2") +
   theme(legend.position = "bottom", legend.title = element_blank()) +
-  theme_minimal()
+  theme_minimal()  +
+  labs(title = "Residual Plot for Model Adequacy")
 ```
 
 *What do the residuals indicate about our models?*
@@ -237,7 +245,6 @@ spots, the linear trend doesn't seem to fit the data.
 ### Predicting Winning Times for 2020 Olympics
 
 ```{r, message = FALSE, warning = FALSE, comment = NA, echo = TRUE, eval = TRUE}
-
 fit2 %>%
   forecast(h = 1) %>%
   mutate(PI = hilo(Time, 95)) %>%
@@ -273,10 +280,11 @@ the data, we aim to identify patterns and uncover any unusual
 fluctuations in the time series.
 
 ```{r, message = FALSE, warning = FALSE, comment = NA, echo = TRUE, eval = TRUE}
-# Plot `souvenirs` data
-# Plot `Sales`
+# Plot `souvenirs` data and plot `Sales`
 souvenirs %>% 
-  autoplot(Sales)
+  autoplot(Sales)+
+  theme_minimal()  +
+  labs("Monthly Souvenirs Sales Data Over Time", x= "Date")
 ```
 
 *Patterns in data*
@@ -298,7 +306,10 @@ variance in the data.
 
 ```{r, message = FALSE, warning = FALSE, comment = NA, echo = TRUE, eval = TRUE}
 # Taking logarithm of the data (and plot)
-souvenirs %>% autoplot(log(Sales)) #r is great because you can just apply log like that 
+souvenirs %>% autoplot(log(Sales)) +
+  theme_minimal() +
+  labs("Logarithmic Transformation of Monthly Souvenirs Sales Data", x= "Date", y= "Log (sales)")
+
 ```
 
 *After taking the log:*
@@ -327,9 +338,13 @@ fit <- souvenirs %>%
 
 # Plot fitted model with `souvenirs` data
 # Plot `Sales`
-  souvenirs %>%
-  autoplot(Sales, col = "gray") +
-  geom_line(data = augment(fit), aes(y = .fitted), col = "blue")
+souvenirs %>%
+  autoplot(log(Sales), col = "gray") +
+  geom_line(data = augment(fit), aes(x = Month, y = .fitted), col = "blue") +
+  labs(x = "Time", y = "Log(Sales)") +
+  theme_minimal() +
+  ggtitle("Fitted Regression Model for Souvenirs Sales Data")
+
 ```
 
 This regression model will help us understand the underlying factors

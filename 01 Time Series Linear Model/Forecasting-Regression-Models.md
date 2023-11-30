@@ -1,9 +1,7 @@
 Time Series Linear Model Applied
 ================
-Rachel Montgomery
-2023-08-28
 
-## Assignment 1: Exploring Time Series Data with R
+## Exploring Time Series Data with R
 
 Welcome to the first assignment of our Time Series Analysis class. In
 this assignment, we’ll be working with real-world time series data to
@@ -67,9 +65,11 @@ jan_vic_elec %>%
     ylab("Electricity Demand") +
     xlab("Temperature") +
     geom_point() +
-    geom_smooth(method="lm", se=FALSE) + #this gives us a line of best fit
+    geom_smooth(method="lm", se=FALSE) +
+  #this gives us a line of best fit
 #the estimated regression line makes the positive relationship more evident
-  theme_minimal()
+  theme_minimal() +
+  labs(title = "Relationship Between Electricity Demand and Temperature", x= "Temperature (°C)")
 ```
 
 ![](Forecasting-Regression-Models_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
@@ -90,7 +90,8 @@ affect the validity of our model.
 
 ``` r
 # Plot residuals
-gg_tsresiduals(fit)
+gg_tsresiduals(fit)+
+   labs(title = "Residual Plot for Model Adequacy") 
 ```
 
 ![](Forecasting-Regression-Models_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
@@ -122,7 +123,9 @@ forecast_future<- fit %>%
 
 # Plot
 autoplot(jan_vic_elec, Demand) +
-  autolayer(forecast_future)
+  autolayer(forecast_future) +
+  theme_minimal() +
+  labs(title = "Electricity Demand Forecast for Different Temperature Scenarios", x= "Date", y="Demand")
 ```
 
 ![](Forecasting-Regression-Models_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
@@ -167,7 +170,8 @@ vic_elec %>% # full dataset
   ) %>%
   ggplot(aes(x = Temperature, y = Demand)) +
   geom_point() +
-  theme_minimal()
+  theme_minimal()  +
+  labs(title = "Electricity Demand vs. Temperature for All Available Data", x= "Temperature (°C)")
 ```
 
 ![](Forecasting-Regression-Models_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
@@ -196,7 +200,8 @@ olympic_running %>%
   scale_color_brewer(palette = "Dark2") +
   theme(legend.position = "bottom", legend.title = element_blank()) +
   labs(y = "Running time (seconds)") +
-  theme_minimal()
+  theme_minimal()+
+  labs(title = "Winning Times Over the Years")
 ```
 
 ![](Forecasting-Regression-Models_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
@@ -248,7 +253,8 @@ olympic_running %>%
     geom_point() +
   ## adding a line of best fit
     geom_smooth(method="lm", se=FALSE) + 
-    theme_minimal()
+    theme_minimal() +
+    labs(title = "Average Rate of Change in Winning Times Over the Years", x= "Temperature (°C)")
 ```
 
 ![](Forecasting-Regression-Models_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
@@ -288,7 +294,8 @@ augment(fit2) %>%
   theme_minimal() +
   scale_color_brewer(palette = "Dark2") +
   theme(legend.position = "bottom", legend.title = element_blank()) +
-  theme_minimal()
+  theme_minimal()  +
+  labs(title = "Residual Plot for Model Adequacy")
 ```
 
 ![](Forecasting-Regression-Models_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
@@ -355,10 +362,11 @@ the data, we aim to identify patterns and uncover any unusual
 fluctuations in the time series.
 
 ``` r
-# Plot `souvenirs` data
-# Plot `Sales`
+# Plot `souvenirs` data and plot `Sales`
 souvenirs %>% 
-  autoplot(Sales)
+  autoplot(Sales)+
+  theme_minimal()  +
+  labs("Monthly Souvenirs Sales Data Over Time", x= "Date")
 ```
 
 ![](Forecasting-Regression-Models_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
@@ -382,7 +390,9 @@ variance in the data.
 
 ``` r
 # Taking logarithm of the data (and plot)
-souvenirs %>% autoplot(log(Sales)) #r is great because you can just apply log like that 
+souvenirs %>% autoplot(log(Sales)) +
+  theme_minimal() +
+  labs("Logarithmic Transformation of Monthly Souvenirs Sales Data", x= "Date", y= "Log (sales)")
 ```
 
 ![](Forecasting-Regression-Models_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
@@ -413,9 +423,12 @@ fit <- souvenirs %>%
 
 # Plot fitted model with `souvenirs` data
 # Plot `Sales`
-  souvenirs %>%
-  autoplot(Sales, col = "gray") +
-  geom_line(data = augment(fit), aes(y = .fitted), col = "blue")
+souvenirs %>%
+  autoplot(log(Sales), col = "gray") +
+  geom_line(data = augment(fit), aes(x = Month, y = .fitted), col = "blue") +
+  labs(x = "Time", y = "Log(Sales)") +
+  theme_minimal() +
+  ggtitle("Fitted Regression Model for Souvenirs Sales Data")
 ```
 
 ![](Forecasting-Regression-Models_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
