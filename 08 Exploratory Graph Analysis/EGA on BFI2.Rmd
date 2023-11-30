@@ -1,7 +1,6 @@
 ---
-title: "Assignment 8"
-author: "Rachel Montgomery"
-output: pdf_document
+title: "EGA"
+output: github_document
 ---
 
 # Exploratory Graph Analysis (EGA) of the BFI-2 Dataset

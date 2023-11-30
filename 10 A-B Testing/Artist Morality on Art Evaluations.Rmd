@@ -1,7 +1,6 @@
 ---
-title: "Assignment 11"
-author: "Rachel Montgomery"
-output: pdf_document
+title: "Artist Morality on Art Evaluations"
+output: github_document
 editor_options: 
   markdown: 
     wrap: sentence
@@ -10,7 +9,7 @@ editor_options:
 # Analyzing the Impact of Artist Morality on Art Evaluations
 
 In this blog post, we will explore a dataset collected from a survey that aimed to understand how people evaluate artworks and the potential influence of artists' morality on those evaluations.
-We will walk through various statistical tests and analyses to answer the research question: Does an artist's morality affect evaluations of their artwork? 
+We will walk through various statistical tests and analyses to answer the research question: Does an artist's morality affect evaluations of their artwork?
 In other words: Can people separate the art from the artist?
 
 ## Data Overview
@@ -19,24 +18,24 @@ The dataset comprises responses from 7,216 participants collected via Amazon Mec
 After applying screening for manipulation checks, we have a final sample size of 250 participants.
 The data was collected through Qualtrics and includes various variables:
 
--   Participant: Unique participant identifiers.
+-   *Participant:* Unique participant identifiers.
 
--   FamousPerson: Names of famous individuals.
+-   *FamousPerson:* Names of famous individuals.
 
--   Painting: Identifiers for paintings.
+-   *Painting:* Identifiers for paintings.
 
--   Morality: Ratings of the morality of famous people.
+-   *Morality:* Ratings of the morality of famous people.
 
--   Attractiveness: Ratings of the attractiveness of paintings.
+-   *Attractiveness:* Ratings of the attractiveness of paintings.
     Beauty: Ratings of the beauty of paintings.
 
--   Skill: Ratings of the skill demonstrated in paintings.
+-   *Skill:* Ratings of the skill demonstrated in paintings.
 
--   Political: Political orientations of participants.
+-   *Political:* Political orientations of participants.
 
--   AEQ: Scores related to aesthetic experiences.
+-   *AEQ:* Scores related to aesthetic experiences.
 
--   Age, Education, Race, Gender, SexualOrientation, SocialPolitical, EconomicPolitical: Demographic information.
+-   *Age, Education, Race, Gender, SexualOrientation, SocialPolitical, EconomicPolitical:* Demographic information.
 
 ## Setting up Environment and Data
 
@@ -60,12 +59,14 @@ load("BIU_Analysis_Data.RData")
 art_morality <- mlm_df ##renaming data object so it makes more sense in our analysis  
 ```
 
-## Analysis 
+## Analysis
 
-### 1. Write a function to perform a *t*-test
+### Initial Setup and Methodology Development
+
+#### Custom T-Test Function Creation
 
 We begin by creating a custom t-test function to compare means between two groups.
-A t-test of means is a statistical test that is used to compare the means of two groups to see if they are significantly different from each other. 
+A t-test of means is a statistical test that is used to compare the means of two groups to see if they are significantly different from each other.
 
 ```{r, echo = TRUE, eval = TRUE, comment = NA, message = FALSE, warning = FALSE}
 # creating function for t-test
@@ -107,7 +108,7 @@ t_test <- function(x1, x2)
 }
 ```
 
-### 2. Write a function to compute Cohen's *d*
+#### Cohen's D Function Development
 
 Next, we develop a function to compute Cohen's d, which measures the effect size between two groups.
 
@@ -140,7 +141,7 @@ cohens_d <- function(x1, x2)
 }
 ```
 
-### 3. Create a group variable in `mlm_df` called `morality_group`
+#### Grouping by Artist Morality
 
 We create a grouping variable called morality_group based on artists' morality scores.
 We classify artists as "Bad" if their morality score is less than -1, "Good" if it's greater than 1, and NA for other cases.
@@ -155,7 +156,9 @@ art_morality <- art_morality %>%
   ))
 ```
 
-### 4. Compute a *t*-test on `Beauty` using only the `"Bad"` and `"Good"` groups using *your* function
+### Beauty Ratings Comparison
+
+#### Using Custom T-Test
 
 In this section, we perform a custom t-test to compare the Beauty ratings between the "Bad" and "Good" morality groups.
 
@@ -175,7 +178,7 @@ good_group <- art_morality %>%
 t_test(bad_group$Beauty, good_group$Beauty)
 ```
 
-### 5. Compute a *t*-test on `Beauty` using only the `"Bad"` and `"Good"` groups using the `t.test` function (set `var.equal = TRUE`)
+#### Using Standard t-test
 
 We also perform a t-test on the Beauty variable using the t.test function and compare the results with our custom t-test.
 
@@ -187,14 +190,14 @@ t_test_result <- t.test(bad_group, good_group, var.equal = TRUE) # assumes that 
 t_test_result
 ```
 
-### 6. Compare your *t*-statistics from questions 4. and 5. Do they differ?
+#### Comparing T-Statistics
 
 We compare the t-statistics from our custom t-test and the one performed using t.test to check for differences.
 
 The p-values and degrees of freedom vary slightly from the custom t-test and the t.test.
 Both come to the conclusion to reject the null hypothesis (based on the p-value being less than 0.05) and conclude that there is evidence to suggest a statistically significant difference in beauty ratings between the "Bad" and "Good" morality groups.
 
-### 7. Intrepret the *p*-value from question 5. Were morally good paintings rated higher in beauty?
+#### P-Value Interpretation of T-Test
 
 Since the p-value (0.01292) is less than the significance level (alpha = 0.05), we reject the null hypothesis.
 This means there is evidence to suggest there is a statistically significant difference in beauty ratings between the "Bad" and "Good" morality groups.
@@ -202,7 +205,9 @@ This means there is evidence to suggest there is a statistically significant dif
 Since our hypothesis is just checking for a difference in means, we cannot say that the good paintings are higher rated.
 This can be guessed, or assumed, based on the sample estimate means, but that is not statistical evidence.
 
-### 8. Compute Cohen's *d* using your function.
+### Effect Size and Statistical Significance Assessment
+
+#### Computing Cohen's D
 
 ```{r, echo = TRUE, eval = TRUE, comment = NA, message = FALSE, warning = FALSE}
 # Cohen's *d* using your function
@@ -212,7 +217,7 @@ cohens_d(bad_group$Beauty, good_group$Beauty)
 The small magnitude of the Cohen's D value indicates that the effect of an artist's perceived morality on the beauty ratings of their artwork is minimal.
 This means that, on average, participants' evaluations of the beauty of artworks are not substantially swayed by their views on the artist's morality.
 
-### 9. Perform an ANOVA using `anova_test`
+#### ANOVA Application
 
 An ANOVA (Analysis of Variance) test is a statistical method used to compare the means of three or more groups to determine if there are any statistically significant differences between them.
 
@@ -226,7 +231,7 @@ summary(anova_result)
 The ANOVA results suggest that there is a statistically significant difference in beauty ratings between the "Bad" and "Good" morality groups.
 The p-value is less than the typical significance level of 0.05, indicating that we can reject the null hypothesis.
 
-### 10. Compute the square of the *t*-statistic from 5. How does it compare to the *F*-statistic in 9.?
+#### Squaring T-Statistic and Comparing with F-Statistic
 
 ```{r, echo = TRUE, eval = TRUE, comment = NA, message = FALSE, warning = FALSE}
 # extract the t-statistic
@@ -263,7 +268,9 @@ Let's interpret these values:
 
 In summary, both the squared t-statistic and the F-statistic provide evidence that the beauty ratings of paintings differ between the "Bad" and "Good" morality groups.
 
-### 11. Perform an ANCOVA using `anova_test`
+### Advanced Statistical Analysis
+
+#### ANCOVA Implementation
 
 An Analysis of Covariance (ANCOVA) is used to compare means of a dependent variable across multiple groups while statistically controlling for the influence of one or more continuous covariates.
 
@@ -282,8 +289,6 @@ ancova_result <- art_morality %>%
 # print the ANCOVA summary
 ancova_result
 ```
-
-### 12. Interpret the ANCOVA in 11. Be sure to mention significant variables and their effect size (0.01 = small; 0.06 = moderate; 0.14 = large). Does including covariates change our interpretation?
 
 *Let's interpret our results:*
 
@@ -309,7 +314,7 @@ In summary, the ANCOVA results suggest that among the variables tested, only AEQ
 However, attributes like morality, physical attractiveness, political orientation, and skill level do not play a significant role in influencing beauty ratings.
 The inclusion of covariates helps provide a more accurate understanding of the relationship between these predictors and Beauty ratings.
 
-### 13. Does an artist's morality affect evaluations on their artwork?
+### Final Assessment: Impact of Artist Morality
 
 To answer the research question, "Does an artist's morality affect evaluations of their artwork?" based on the analysis we've conducted, we can provide the following conclusion:
 

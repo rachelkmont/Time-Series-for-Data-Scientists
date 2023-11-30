@@ -1,10 +1,6 @@
 ---
-title: 'Assignment 6: VAR Models'
-author: "Rachel Montgomery"
-date: "2023-10-08"
-output:
-  html_document:
-    df_print: paged
+title: 'VAR Models'
+output:github_document
 ---
 
 ```{r setup, include=FALSE}

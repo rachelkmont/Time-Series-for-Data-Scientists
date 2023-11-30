@@ -1,7 +1,6 @@
 ---
-title: "Assignment 5"
-author: "Rachel Montgomery"
-output: pdf_document
+title: "TSLM + ARIMA"
+output: github_document
 ---
 
 ```{r setup, include=FALSE}

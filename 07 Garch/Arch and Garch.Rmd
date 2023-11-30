@@ -1,9 +1,6 @@
 ---
-title: "Assignment 7"
-author: "Rachel Montgomery"
-output:
-  html_document:
-    df_print: paged
+title: "ARCH and GARCH"
+output:github_document
 ---
 
 ## ARCH and GARCH Modeling with Mattel Stock Data

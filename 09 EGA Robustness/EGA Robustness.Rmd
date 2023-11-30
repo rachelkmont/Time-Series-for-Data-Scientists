@@ -1,7 +1,6 @@
 ---
-title: "Assignment 9"
-author: "Rachel Montgomery"
-output: pdf_document
+title: "EGA Robustness"
+output: github_document
 ---
 
 # Exploratory Graph Analysis (EGA) Robustness of the BFI-2 Dataset
@@ -323,3 +322,4 @@ In general, these redundancies could impact the survey's efficiency, as similar 
 ### Conclusion
 
 In this assignment, we found partial measurement invariance in the BFI-2 survey across different time points and between younger and middle-aged groups, with significant differences in certain items suggesting variations in how traits are perceived or responded to over time and across age groups. Redundancies were identified in both age groups, with items related to emotional states, organization, and artistic interests showing high correlations, indicating potential overlap in what they measure. These findings highlight the importance of considering age-specific responses and item uniqueness in personality assessments. Overall, the results suggest the need for refinement of certain BFI-2 items to enhance its reliability and applicability across diverse age groups and over time. Most pysch studies are phasing out the Big-5, likely because of these reasons.
+
