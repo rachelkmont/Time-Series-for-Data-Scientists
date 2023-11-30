@@ -1,0 +1,549 @@
+---
+title: "Assignment 2"
+author: "Rachel Montgomery"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, cache = TRUE)
+library(fpp3)
+library(tidyverse)
+library(readr)
+library(forecast)
+```
+
+## FPP3 3.7 Exercises: 7(a-f)
+
+## Participant 18 from Fried et al.'s (2022) data
+
+### 7.
+
+Consider the last five years of the Gas data from `aus_production`.
+
+```{r, message = FALSE, warning = FALSE, comment = NA, echo = TRUE, eval = TRUE}
+# Code block found in book
+gas <- tail(aus_production, 5*4) %>%
+  select(Gas)
+
+head(gas) ##looking at data
+```
+
+### a. Plot the time series. Can you identify seasonal fluctuations and/or a trend-cycle?
+
+```{r, message = FALSE, warning = FALSE, comment = NA, echo = TRUE, eval = TRUE}
+autoplot(gas)
+```
+There is an upward trend with a quarterly seasonality.
+
+### b. Use `STL` to calculate the trend-cycle and seasonal indices.
+
+```{r, message = FALSE, warning = FALSE, comment = NA, echo = TRUE, eval = TRUE}
+# Store components
+gas_components <- gas %>%
+  model(stl = STL(Gas))
+
+# STL Trend
+gas %>%
+  autoplot(Gas, color = 'gray') +
+  autolayer(
+    components(gas_components),
+    trend, # plot trend
+    color = '#D55E00'
+  ) +
+  labs(
+    y = " (in petajoules)",
+    title = "Australia Gas Consumption"
+  )
+
+gas %>%
+  autoplot(Gas, color = 'gray') +
+  autolayer(
+    components(gas_components),
+    trend + season_year, # plot trend and seasonality
+    color = '#D55E00'
+  ) +
+  labs(
+    y = "Gas (in petajoules)",
+    title = "Seasonal Trends in Australia Gas Consumption"
+  )
+
+# STL decomposition
+gas %>% # dataset
+  model(stl = STL(Gas)) %>% # model (STL)
+  components() %>% # components of decomposition
+  autoplot() # plot
+
+
+```
+
+
+### c. Do the results support the graphical interpretation from part a?
+Yes, after the STL decomposition, we can se the upward trend and the quarterly in the decompositon components.
+
+### d. Compute and plot the seasonally adjusted data.
+
+```{r, message = FALSE, warning = FALSE, comment = NA, echo = TRUE, eval = TRUE}
+# Hint: use `season_adjust` in STL plot
+
+# STL Season Adjustment
+gas %>%
+  autoplot(Gas, color = 'gray') +
+  autolayer(
+    components(gas_components),
+    season_adjust, # plot season adjustment
+    color = '#D55E00'
+  ) +
+  labs(
+    y = "Gas (in petajoules)",
+    title = "Seasonally Adjusted Australia Gas Consumption"
+  )
+
+```
+
+### e. Change one observation to be an outlier (e.g., add 300 to one observation), and recompute the seasonally adjusted data. What is the effect of the outlier?
+
+```{r, message = FALSE, warning = FALSE, comment = NA, echo = TRUE, eval = TRUE}
+# Add outlier (done for you)
+gas_outlier <- gas %>%
+  mutate(Gas = if_else(Quarter == yearquarter("2007Q4"), Gas + 300, Gas))
+  
+# Replot seasonally adjusted data using STL
+gas_outlier %>%
+  autoplot(Gas, color = 'gray') +
+  autolayer(
+    components(gas_components),
+    season_adjust, # plot season adjustment
+    color = '#D55E00'
+  ) +
+  labs(
+    y = "Gas (in petajoules)",
+    title = "Seasonally Adjusted Australia Gas Consumption"
+  )
+```
+
+> Comment on the effect relative to the original seasonally adjusted plot
+
+Adding the outlier of 300 created a laege spike in the data from 2007 to 2008. It also lowered the seasonal adjustment to 200, and made the trend decrease drastically, so the adjustment almost appears constant. The effect is similar to that of a pool - once a large dent was created, the rest of the plot had to "balance itself out" by lowering the values around the spike.
+
+### f. Does it make any difference if the outlier is near the end rather than in the middle of the time series?
+
+```{r, message = FALSE, warning = FALSE, comment = NA, echo = TRUE, eval = TRUE}
+# Hint: Use the code provided above but
+# adjusted the year and quarter
+# Try a few different years and quarters 
+# to get a better understanding
+# (plot at least three different combinations)
+
+
+# Add outlier at the beginning
+gas_outlier <- gas %>%
+  mutate(Gas = if_else(Quarter == yearquarter("2006Q2"), Gas + 300, Gas))
+  
+# Replot seasonally adjusted data using STL
+gas_outlier %>%
+  autoplot(Gas, color = 'gray') +
+  autolayer(
+    components(gas_components),
+    season_adjust, # plot season adjustment
+    color = '#D55E00'
+  ) +
+  labs(
+    y = "Gas (in petajoules)",
+    title = "Seasonally Adjusted Australia Gas Consumption"
+  )
+
+```
+
+```{r, message = FALSE, warning = FALSE, comment = NA, echo = TRUE, eval = TRUE}
+# Hint: Use the code provided above but
+# adjusted the year and quarter
+# Try a few different years and quarters 
+# to get a better understanding
+# (plot at least three different combinations)
+
+# Add outlier at the end 
+gas_outlier <- gas %>%
+  mutate(Gas = if_else(Quarter == yearquarter("2010Q1"), Gas + 300, Gas))
+  
+# Replot seasonally adjusted data using STL
+gas_outlier %>%
+  autoplot(Gas, color = 'gray') +
+  autolayer(
+    components(gas_components),
+    season_adjust, # plot season adjustment
+    color = '#D55E00'
+  ) +
+  labs(
+    y = "Gas (in petajoules)",
+    title = "Seasonally Adjusted Australia Gas Consumption"
+  )
+
+```
+
+```{r, message = FALSE, warning = FALSE, comment = NA, echo = TRUE, eval = TRUE}
+# Hint: Use the code provided above but
+# adjusted the year and quarter
+# Try a few different years and quarters 
+# to get a better understanding
+# (plot at least three different combinations)
+
+# Add outlier in the first 1/3 of the data 
+gas_outlier <- gas %>%
+  mutate(Gas = if_else(Quarter == yearquarter("2008Q3"), Gas + 300, Gas))
+  
+# Replot seasonally adjusted data using STL
+gas_outlier %>%
+  autoplot(Gas, color = 'gray') +
+  autolayer(
+    components(gas_components),
+    season_adjust, # plot season adjustment
+    color = '#D55E00'
+  ) +
+  labs(
+    y = "Gas (in petajoules)",
+    title = "Seasonally Adjusted Australia Gas Consumption"
+  )
+
+```
+
+```{r}
+# Add outlier in last 3/4 of data
+gas_outlier <- gas %>%
+  mutate(Gas = if_else(Quarter == yearquarter("2009Q1"), Gas + 300, Gas))
+  
+# Replot seasonally adjusted data using STL
+gas_outlier %>%
+  autoplot(Gas, color = 'gray') +
+  autolayer(
+    components(gas_components),
+    season_adjust, # plot season adjustment
+    color = '#D55E00'
+  ) +
+  labs(
+    y = "Gas (in petajoules)",
+    title = "Seasonally Adjusted Australia Gas Consumption"
+  )
+```
+
+
+> Comment on general patterns you see (e.g., what happens to the trend? what happens to seasonlity?)
+No matter where the outlier is in the data, we can see that the rest of the time series still "flattens" out everywhere else. The seasonality is still present, but the trend is not.
+
+### Participant 18
+
+### Prepare Data
+About the data: Emotions over two weeks, queried 4 times per day, between
+March 11-April 4, 2020. Our goal: Forecast a person’s level of feeling worried.
+```{r, comment = NA, warning = FALSE, message = FALSE, echo = TRUE, eval = TRUE}
+# Load data
+emotions <- read_csv("clean_ema.csv")
+
+##view data
+head(emotions)
+
+# Obtain participant 18
+participant <- emotions[emotions$ID == unique(emotions$ID)[18],]
+
+# Obtain time and question variables
+questions <- data.frame(
+time = participant$time, # time
+participant[,grep(
+"Q", colnames(participant))]) # questions
+
+# First eight questions
+data <- questions[,c(
+  1, # time
+  2:9 # first eight questions
+)]
+
+# Relabel questions
+colnames(data)[2:9] <- c(
+  "relax", "irritable", "worry",
+  "nervous", "future", "anhedonia",
+  "tired", "alone"
+)
+
+# Remove missing data
+data <- na.omit(data)
+
+# Convert to `tsibble`
+ts <- data %>%
+  mutate(
+    time = ymd_hms(time)
+  ) %>%
+  as_tsibble(
+    index = time
+  )
+
+# Convert to `tsibble`
+ts_fill <- ts %>%
+  fill_gaps() # fill in time gaps
+# for plotting residuals later
+
+# Length of time series
+ts_length <- nrow(ts)
+ts_fill_length <- nrow(ts_fill)
+
+# Remove last four time points (we'll make a prediction later) 
+prediction <- ts[
+  -c((ts_length - 7):ts_length), # remove last 4 points
+]
+
+# For modeling residuals 
+prediction_fill <- ts_fill[
+  -c((ts_fill_length - 7):ts_fill_length), # remove last 4 points
+]
+
+# Save last four time points (we'll compare with prediction)
+actual <- ts[
+  c((ts_length - 7):ts_length), # keeps last 4 points
+] %>%
+  fill_gaps()
+```
+
+### Visualize Data
+
+```{r, comment = NA, warning = FALSE, message = FALSE, echo = TRUE, eval = TRUE}
+# Visualize time series
+
+prediction %>%
+gather(
+"Measure", "Change",
+relax, irritable, worry,
+nervous, future, anhedonia,
+tired, alone
+) %>%
+ggplot(aes(x = time, y = Change, colour = Measure)) +
+geom_line() +
+facet_grid(vars(Measure), scales = "free_y") +
+labs(y="") +
+guides(colour="none")
+```
+
+```{r, comment = NA, warning = FALSE, message = FALSE, echo = TRUE, eval = TRUE}
+# Compute correlations
+prediction %>%
+select(-time) %>%
+GGally::ggpairs()
+
+```
+
+### Model Estimation
+
+```{r, comment = NA, warning = FALSE, message = FALSE, echo = TRUE, eval = TRUE}
+# Fit linear model
+emotion_fit <- prediction_fill %>% # our data
+model( # model for time series
+tslm = TSLM( # time series linear model
+worry ~ 
+  relax + 
+  irritable +
+  nervous + 
+  future + ## change future with worry 
+  anhedonia +
+  tired +
+  alone))
+
+### use this model for the ladt Q
+#use ts model to generate data for future values to make a prediction about worry 
+## say something like : based on these variables, make random, future values 
+
+```
+
+```{r, comment = NA, warning = FALSE, message = FALSE, echo = TRUE, eval = TRUE}
+# Report fit
+report(emotion_fit)
+
+glance(emotion_fit) %>%
+  select(adj_r_squared, CV, AIC, AICc, BIC, log_lik)
+```
+
+> Report on predictors (were any significant?): Only anhedonia is predicted through thought (beta = 0.92, p < 0.001)
+
+### Forecast: Make Forecast
+
+#### You will need to generate new data
+
+####  Use ChatGPT to brain storm ways to generate new data for TSLM
+
+#### Your goals:
+
+1. Work with ChatGPT to come up with a way to generate new data for TSLM
+
+2. Make a forecast with the new data with your TSLM model
+
+3. Compare your forecast against random data (use `sample`)
+
+4. Plot your forecast and the random forecast
+
+5. Evaluate the predictions and determine which method produced better forecasts
+
+### Forecast: Method with ChatGPT
+
+```{r}
+#chat gpt prompt: Can you please generate a dataset made of 12 points() with the values time, relax, irritable, worry, nervous,future,anhedonia, tired, alone. . can you please randomly generate values 1-4 for the data, and make the time values"2020-03-30 12:00:00", "2020-03-30 15:00:00",
+                    # "2020-03-30 18:00:00", "2020-03-30 21:00:00",
+                    # "2020-03-31 12:00:00", "2020-03-31 15:00:00",
+                    # "2020-03-31 18:00:00", "2020-03-31 21:00:00",
+                    # "2020-04-01 12:00:00", "2020-04-01 15:00:00",
+                    # "2020-04-11 18:00:00", "2020-04-01 21:00:00"
+
+library(lubridate)
+
+gpt_data <- read_csv("gptdata3.csv", 
+    col_types = cols(relax = col_integer(), 
+        irritable = col_integer(), worry = col_integer(), 
+        nervous = col_integer(), future = col_integer(), 
+        anhedonia = col_integer(), tired = col_integer(), 
+        alone = col_integer()))
+
+gpt_data$time <- ymd_hms(gpt_data$time) #Make into time format it will like 
+
+gpt_data1 <- as_tsibble(gpt_data,index=time) #making into tibble so can plots
+
+# Forecast new scenarios
+fc_gpt<- emotion_fit %>%
+  forecast(new_data = gpt_data1)
+
+```
+
+### Forecast: Method with Random Data
+
+```{r, comment = NA, warning = FALSE, message = FALSE, echo = TRUE, eval = TRUE}
+# Load the necessary library for working with dates
+library(lubridate)
+
+# Set the number of observations
+num_observations <- 12
+
+# Generate random times within a specific date range
+# start_date <- as.POSIXct("2020-03-30 00:00:00")
+# end_date <- as.POSIXct("2023-04-01 18:00:00")
+# times <- seq(start_date, end_date, by = "3 hours")
+
+#need to make the days march 30th noon -> april 1st at 3 pm
+#4 points per day, 3 days 
+times_for_swag <- c("2020-03-30 12:00:00", "2020-03-30 15:00:00",
+                    "2020-03-30 18:00:00", "2020-03-30 21:00:00",
+                    "2020-03-31 12:00:00", "2020-03-31 15:00:00",
+                    "2020-03-31 18:00:00", "2020-03-31 21:00:00",
+                    "2020-04-01 12:00:00", "2020-04-01 15:00:00",
+                    "2020-04-01 18:00:00", "2020-04-01 21:00:00")
+
+# Create a random dataset
+set.seed(16) # for reproducibility
+
+random_data <- data.frame(
+  time = times_for_swag,
+  relax = sample(1:4, num_observations, replace = TRUE),
+  irritable = sample(1:4, num_observations, replace = TRUE),
+  worry = sample(1:4, num_observations, replace = TRUE),
+  nervous = sample(1:4, num_observations, replace = TRUE),
+  future = sample(1:4, num_observations, replace = TRUE),
+  anhedonia = sample(1:4, num_observations, replace = TRUE),
+  tired = sample(1:4, num_observations, replace = TRUE),
+  alone = sample(1:4, num_observations, replace = TRUE) )
+
+#random_data$time <- as.POSIXct(random_data$time) #makes time var
+
+random_data$time <- ymd_hms(random_data$time) #Make into time format it will like 
+
+random_data1 <- as_tsibble(random_data, index=time) #making into tibble so can plot 
+
+# Make future possibilities
+#random_scenarios <- scenarios(random_data)
+
+# Forecast new scenarios
+fc_random<- emotion_fit %>%
+  forecast(new_data = random_data1)
+
+```
+
+### Forecast: Plot Forecast
+```{r}
+data <- as_tsibble(data,index=time) #making into tibble so can plots
+```
+
+
+```{r}
+# Plot forecasts simultaneously
+data %>%
+  autoplot(worry) +
+  autolayer(fc_gpt, alpha = 0.333) +
+  labs(
+    # No y-axis label
+    y = NULL, 
+    # Change title
+    title = "Forecast and randomly generated forecast",
+    subtitle = "Chat Gpt Data Generated"
+  ) +
+  scale_y_continuous( 
+    limits = c(1, 5), # minimum and maximum of y-axis
+    breaks = seq(1, 5, 1) # breaks on y-axis
+  )
+```
+
+```{r}
+# Plot forecasts simultaneously
+data %>%
+  autoplot(worry) +
+  autolayer(fc_random, alpha = 0.333) +
+  labs(
+    # No y-axis label
+    y = NULL, 
+    # Change title
+    title = "Forecast and randomly generated forecast",
+    subtitle = "Random Data Generated"
+  ) +
+  scale_y_continuous( 
+    limits = c(1, 5), # minimum and maximum of y-axis
+    breaks = seq(1, 5, 1) # breaks on y-axis
+  )
+```
+
+
+> Comment on each of the predictions. Do any seem to work well? Which do you think performed best and why?
+
+It seems like the Chat GPT data is performing better. The error bars are smaller for that plot than the randomly generated data.
+
+### Forecast: Evaluate Forecast
+
+
+```{r, comment = NA, warning = FALSE, message = FALSE, echo = TRUE, eval = FALSE}
+# Merge or join the datasets based on the common timestamp or time column
+merged_data <- inner_join(fc_gpt, data, by = "time")
+
+# Calculate accuracy measures (e.g., RMSE, MAE, etc.) based on the merged data
+# Replace "forecasted_values" and "actual_values" with your specific column names
+rmse <- sqrt(mean((merged_data$fc_gpt - merged_data$data)^2))
+mae <- mean(abs(merged_data$fc_gpt - merged_data$data))
+
+# Print the accuracy measures
+cat("RMSE:", rmse, "\n")
+cat("MAE:", mae, "\n")
+
+```
+```{r}
+# Merge or join the datasets based on the common timestamp or time column
+merged_data <- inner_join(fc_random, data, by = "time")
+
+# Calculate accuracy measures (e.g., RMSE, MAE, etc.) based on the merged data
+# Replace "forecasted_values" and "actual_values" with your specific column names
+rmse <- sqrt(mean((merged_data$fc_gpt - merged_data$data)^2))
+mae <- mean(abs(merged_data$fc_gpt - merged_data$data))
+
+# Print the accuracy measures
+cat("RMSE:", rmse, "\n")
+cat("MAE:", mae, "\n")
+```
+
+
+> Which method performed best based on these evaluation measures? Justify which method you think performed best
+
+Because of how I coded the new values, the typical metrics won't work. But, we can imply from the charts that in general, random forecasts are not the best way to go. From just looking at the plots, it seems like the Chat GPT data is performing better. The error bars are smaller for that plot than the randomly generated data.
+
+
+
+
+
+
