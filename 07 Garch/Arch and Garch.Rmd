@@ -1,6 +1,6 @@
 ---
 title: "ARCH and GARCH"
-output:github_document
+output: github_document
 ---
 
 ## ARCH and GARCH Modeling with Mattel Stock Data
